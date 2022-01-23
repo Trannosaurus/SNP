@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>SNP</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+  </head>
+  <body>
+	<canvas id="myChart" width="400" height="200"></canvas>
+	<script>
+	    window.addEventListener('load', setup);
+	    async function setup(){
+		const ctx = document.getElementById('myChart').getContext('2d');
+		const price = await getSNP();
+		const myChart = new Chart(ctx, {
+		    type: 'line',
+		    data: {
+			labels: price.x,
+			datasets: [{
+			    label: 'SNP stock price from 1985',
+			    data: price.y,
+			    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+			    borderColor: 'rgba(255, 99, 132, 1)',
+			    borderWidth: 1
+			}]
+		    },
+		});
+	    }
+	    /*
+	    async function getSNP() {
+	    	const x = [];
+		const y = [];
+		const response = await fetch('test.csv');
+		const data = await response.text();
+		const row = data.split(/\n/).slice(1);
+		    for(let i=0;i<row.length;i++){
+			const column = row[i].split(',');
+			const date = column[0].split('-');
+			const time = date[0] + (date[1]/12) + (date[2]/365);
+			const open = column[1];
+			x.push(time);
+			y.push(open);
+		    }
+		return {x,y};
+	    }
+	    */
+	    /*
+	    lesson learned from data test01, or SNP data:
+		check format of data: SNP data included ","
+	    */
+
+	    async function getSNP() {
+	    	const x = [];
+		const y = [];
+		const response = await fetch('test01.csv');
+		const data = await response.text();
+		const row = data.split(/\n/).slice(1);
+	        for(let i=row.length-2;i>=0;i--){
+		    const column = row[i].split(/\t/);
+		    const date = column[0];
+		    const open = column[1].replace(/,/g, '');
+		    x.push(date);
+		    y.push(open);
+		}
+		return {x,y};
+	    }
+	    async function longSNP() {
+		const price = await getSNP();	
+		let preHigh = price.y[0], preLow, hiHigh, loLow;
+		console.log("this is previous high" + preHigh);
+	    };
+	    longSNP();
+	</script>
+    </body>
+</html> 
